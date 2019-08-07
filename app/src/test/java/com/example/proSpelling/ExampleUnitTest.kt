@@ -1,4 +1,4 @@
-package com.example.flashcards
+package com.example.proSpelling
 
 import org.junit.Test
 

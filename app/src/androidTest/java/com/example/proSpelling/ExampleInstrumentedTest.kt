@@ -1,4 +1,4 @@
-package com.example.flashcards
+package com.example.proSpelling
 
 import androidx.test.InstrumentationRegistry
 import androidx.test.runner.AndroidJUnit4
@@ -19,6 +19,6 @@ class ExampleInstrumentedTest {
     fun useAppContext() {
         // Context of the app under test.
         val appContext = InstrumentationRegistry.getTargetContext()
-        assertEquals("com.example.flashcards", appContext.packageName)
+        assertEquals("com.example.prospelling", appContext.packageName)
     }
 }
