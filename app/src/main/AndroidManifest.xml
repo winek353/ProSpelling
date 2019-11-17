@@ -17,6 +17,7 @@
             </intent-filter>
         </activity>
         <activity android:name=".CreateFlashcardActivity"/>
+        <activity android:name=".LearnActivity"/>
     </application>
 
 </manifest>
