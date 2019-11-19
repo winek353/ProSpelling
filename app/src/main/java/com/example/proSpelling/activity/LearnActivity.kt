@@ -1,9 +1,10 @@
-package com.example.proSpelling
+package com.example.proSpelling.activity
 
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
+import com.example.proSpelling.R
 import kotlinx.android.synthetic.main.activity_learn.*
 
 class LearnActivity: AppCompatActivity(){

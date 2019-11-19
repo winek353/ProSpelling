@@ -9,15 +9,15 @@
             android:roundIcon="@mipmap/ic_launcher_round"
             android:supportsRtl="true"
             android:theme="@style/AppTheme">
-        <activity android:name="com.example.proSpelling.MainActivity">
+        <activity android:name="com.example.proSpelling.activity.MainActivity">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN"/>
 
                 <category android:name="android.intent.category.LAUNCHER"/>
             </intent-filter>
         </activity>
-        <activity android:name=".CreateFlashcardActivity"/>
-        <activity android:name=".LearnActivity"/>
+        <activity android:name=".activity.CreateFlashcardActivity"/>
+        <activity android:name=".activity.LearnActivity"/>
     </application>
 
 </manifest>
