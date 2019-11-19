@@ -9,4 +9,6 @@ class Flashcard{
         this.obverse = obverse
         this.reverse = reverse
     }
+
+    constructor()
 }

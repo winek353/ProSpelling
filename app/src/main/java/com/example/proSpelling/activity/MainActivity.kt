@@ -18,9 +18,6 @@ class MainActivity : AppCompatActivity() {
         }
         buttonLearn.setOnClickListener{
             startActivity(Intent(this, LearnActivity::class.java))
-            //YoYo.with(Techniques.FlipInX).duration(700).playOn(buttonLearn)
-            //buttonLearn.setText("Dupa");
-//            YoYo.with(Techniques.).duration(700).playOn(buttonLearn)
         }
     }
 }

@@ -42,4 +42,24 @@ class DatabaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
             Toast.makeText(context, "Success", Toast.LENGTH_SHORT).show()
     }
 
+    fun readData() : ArrayList<Flashcard>{
+        var list : ArrayList<Flashcard> = ArrayList()
+
+        val db = this.readableDatabase
+        val query = "Select * from $TABLE_NAME"
+        val result = db.rawQuery(query, null)
+        if(result.moveToFirst())
+            do{
+                var flashcard = Flashcard()
+                flashcard.id = result.getString(result.getColumnIndex(COL_ID)).toInt()
+                flashcard.obverse = result.getString(result.getColumnIndex(COL_OBVERSE))
+                flashcard.reverse = result.getString(result.getColumnIndex(COL_REVERSE))
+                list.add(flashcard)
+            }while (result.moveToNext())
+
+        result.close()
+        db.close()
+        return list
+    }
+
 }
