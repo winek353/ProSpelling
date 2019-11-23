@@ -62,4 +62,10 @@ class DatabaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         return list
     }
 
+    fun deleteData(id : Int){
+        val db = this.writableDatabase
+        db.delete(TABLE_NAME, "$COL_ID = ?", arrayOf(id.toString()))
+        db.close()
+    }
+
 }

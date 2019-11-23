@@ -43,6 +43,28 @@ class LearnActivity: AppCompatActivity(){
             isFlashcardShowingObverse = true
         }
 
+        delete_button.setOnClickListener{
+            db.deleteData(flashcardList.get(flashcardIndex).id)
+            flashcardList.removeAt(flashcardIndex)
+            if(flashcardList.isNotEmpty()){
+                flashcardIndex++
+                flashcardIndex %= flashcardList.size
+                flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+                isFlashcardShowingObverse = true
+            }else{
+                flashcardIndex = 0
+                flashcard_main_text.setText("NO DATA!")
+            }
+
+        }
+
+        if(flashcardList.isEmpty()){
+            flashcard_main_text.setText("NO DATA!")
+            flashcard.setOnClickListener(null)
+            next_button.setOnClickListener(null)
+            delete_button.setOnClickListener(null)
+        }
+
     }
 
 }
