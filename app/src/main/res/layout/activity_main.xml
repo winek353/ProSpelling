@@ -9,7 +9,7 @@
         tools:context=".activity.MainActivity">
 
     <Button
-            android:text="Create"
+            android:text="@string/create_button_text"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:background="@color/buttonYellow"
@@ -20,7 +20,7 @@
             android:layout_marginRight="8dp" android:layout_marginEnd="8dp"
     />
     <Button
-            android:text="Learn"
+            android:text="@string/learn_button_text"
             android:layout_width="380dp"
             android:layout_height="wrap_content"
             android:background="@color/buttonYellow"

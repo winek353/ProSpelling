@@ -1,3 +1,5 @@
 <resources>
     <string name="app_name">ProSpelling</string>
+    <string name="create_button_text">Create</string>
+    <string name="learn_button_text">Learn</string>
 </resources>

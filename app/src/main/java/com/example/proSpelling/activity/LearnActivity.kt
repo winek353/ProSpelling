@@ -13,58 +13,76 @@ class LearnActivity: AppCompatActivity(){
     var isFlashcardShowingObverse = true
     var flashcardList = ArrayList<Flashcard>()
     var flashcardIndex = 0
+    var db = DatabaseHandler(this)
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
 
-        var db = DatabaseHandler(this)
+
         flashcardList = db.readData()
-        flashcardIndex = 0
 
         flashcard.setOnClickListener{
-            if(isFlashcardShowingObverse){
-                YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
-                flashcard_main_text.setText(flashcardList.get(flashcardIndex).reverse)
-                isFlashcardShowingObverse = false
-            }
-            else{
-                YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
-                flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
-                isFlashcardShowingObverse = true
-            }
+            flipFlashcard()
+        }
+        next_button.setOnClickListener{
+            nextFlashcard()
+        }
+        delete_button.setOnClickListener{
+            deleteFlashcard()
         }
 
-        next_button.setOnClickListener{
-            flashcardIndex++
-            flashcardIndex %= flashcardList.size
+        initializeFirstFlashcard()
+
+    }
+
+
+    fun flipFlashcard(){
+        if(isFlashcardShowingObverse){
+            YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
+            flashcard_main_text.setText(flashcardList.get(flashcardIndex).reverse)
+            isFlashcardShowingObverse = false
+        }
+        else{
+            YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
             flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
             isFlashcardShowingObverse = true
         }
+    }
 
-        delete_button.setOnClickListener{
-            db.deleteData(flashcardList.get(flashcardIndex).id)
-            flashcardList.removeAt(flashcardIndex)
-            if(flashcardList.isNotEmpty()){
-                flashcardIndex++
-                flashcardIndex %= flashcardList.size
-                flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
-                isFlashcardShowingObverse = true
-            }else{
-                flashcardIndex = 0
-                flashcard_main_text.setText("NO DATA!")
-            }
+    fun nextFlashcard(){
+        flashcardIndex++
+        flashcardIndex %= flashcardList.size
+        flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+        isFlashcardShowingObverse = true
+    }
 
+    fun deleteFlashcard(){
+        db.deleteData(flashcardList.get(flashcardIndex).id)
+        flashcardList.removeAt(flashcardIndex)
+        if(flashcardList.isNotEmpty()){
+            nextFlashcard()
+        }else{
+            flashcardIndex = 0
+            onEmptyFlashcardList()
         }
+    }
 
+    fun onEmptyFlashcardList(){
+        flashcard_main_text.setText("NO DATA!")
+        flashcard.setOnClickListener(null)
+        next_button.setOnClickListener(null)
+        delete_button.setOnClickListener(null)
+    }
+
+    fun initializeFirstFlashcard(){
         if(flashcardList.isEmpty()){
-            flashcard_main_text.setText("NO DATA!")
-            flashcard.setOnClickListener(null)
-            next_button.setOnClickListener(null)
-            delete_button.setOnClickListener(null)
+            onEmptyFlashcardList()
+        }else{
+            flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+            isFlashcardShowingObverse = true
         }
-
     }
 
 }
