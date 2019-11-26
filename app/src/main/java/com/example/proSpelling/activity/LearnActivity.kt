@@ -1,6 +1,7 @@
 package com.example.proSpelling.activity
 
 import android.os.Bundle
+import android.view.View
 import androidx.appcompat.app.AppCompatActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
@@ -20,7 +21,7 @@ class LearnActivity: AppCompatActivity(){
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
 
-
+        save_edition_button.setVisibility(View.GONE)
         flashcardList = db.readData()
 
         flashcard.setOnClickListener{
@@ -32,11 +33,35 @@ class LearnActivity: AppCompatActivity(){
         delete_button.setOnClickListener{
             deleteFlashcard()
         }
+        edit_button.setOnClickListener{
+            editFlashcard()
+        }
+        save_edition_button.setOnClickListener{
+            edit_obverse.setVisibility(View.GONE)
+            edit_reverse.setVisibility(View.GONE)
+            save_edition_button.setVisibility(View.GONE)
+
+            flashcardList.get(flashcardIndex).obverse = edit_obverse.text.toString()
+            flashcardList.get(flashcardIndex).reverse = edit_reverse.text.toString()
+
+            db.updateData(flashcardList.get(flashcardIndex))
+        }
 
         initializeFirstFlashcard()
 
+
+
     }
 
+    fun editFlashcard(){
+        edit_obverse.setText(flashcardList.get(flashcardIndex).obverse)
+        edit_obverse.setVisibility(View.VISIBLE)
+
+        edit_reverse.setText(flashcardList.get(flashcardIndex).reverse)
+        edit_reverse.setVisibility(View.VISIBLE)
+
+        save_edition_button.setVisibility(View.VISIBLE)
+    }
 
     fun flipFlashcard(){
         if(isFlashcardShowingObverse){

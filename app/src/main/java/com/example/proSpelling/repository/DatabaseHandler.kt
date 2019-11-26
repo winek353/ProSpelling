@@ -68,4 +68,14 @@ class DatabaseHandler(var context: Context) : SQLiteOpenHelper(context, DATABASE
         db.close()
     }
 
+    fun updateData(flashcard : Flashcard){
+        val db = this.readableDatabase
+        var cv = ContentValues()
+        cv.put(COL_OBVERSE, flashcard.obverse)
+        cv.put(COL_REVERSE, flashcard.reverse)
+        db.update(TABLE_NAME,cv,"$COL_ID=?",
+            arrayOf(flashcard.id.toString()))
+        db.close()
+    }
+
 }
