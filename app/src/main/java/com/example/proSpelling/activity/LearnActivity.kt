@@ -6,15 +6,20 @@ import androidx.appcompat.app.AppCompatActivity
 import com.daimajia.androidanimations.library.Techniques
 import com.daimajia.androidanimations.library.YoYo
 import com.example.proSpelling.R
-import com.example.proSpelling.model.Flashcard
-import com.example.proSpelling.repository.DatabaseHandler
+import com.example.proSpelling.dao.FlashcardDao
+import com.example.proSpelling.database.AppDatabase
+import com.example.proSpelling.entity.Flashcard
+import io.reactivex.Observable
+import io.reactivex.android.schedulers.AndroidSchedulers
+import io.reactivex.schedulers.Schedulers
 import kotlinx.android.synthetic.main.activity_learn.*
 
 class LearnActivity: AppCompatActivity(){
-    var isFlashcardShowingObverse = true
-    var flashcardList = ArrayList<Flashcard>()
-    var flashcardIndex = 0
-    var db = DatabaseHandler(this)
+    private var isFlashcardShowingObverse = true
+    private var flashcardList: MutableList<Flashcard> = emptyList<Flashcard>().toMutableList()
+    private var flashcardIndex = 0
+    private var db: AppDatabase? = null
+    private var flashcardDao: FlashcardDao? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -22,7 +27,17 @@ class LearnActivity: AppCompatActivity(){
         setContentView(R.layout.activity_learn)
 
         save_edition_button.setVisibility(View.GONE)
-        flashcardList = db.readData()
+
+
+
+        Observable.fromCallable {
+            db = AppDatabase.getAppDataBase(context = this)
+            flashcardDao = db?.flashcardDao()
+            flashcardList = flashcardDao?.getFlashcards()?.toMutableList().orEmpty().toMutableList()
+            initializeFirstFlashcard()
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
 
         flashcard.setOnClickListener{
             flipFlashcard()
@@ -36,6 +51,7 @@ class LearnActivity: AppCompatActivity(){
         edit_button.setOnClickListener{
             editFlashcard()
         }
+
         save_edition_button.setOnClickListener{
             edit_obverse.setVisibility(View.GONE)
             edit_reverse.setVisibility(View.GONE)
@@ -44,10 +60,13 @@ class LearnActivity: AppCompatActivity(){
             flashcardList.get(flashcardIndex).obverse = edit_obverse.text.toString()
             flashcardList.get(flashcardIndex).reverse = edit_reverse.text.toString()
 
-            db.updateData(flashcardList.get(flashcardIndex))
+            Observable.fromCallable {
+                flashcardDao?.updateFlashcard(flashcardList.get(flashcardIndex))
+            }.subscribeOn(Schedulers.io())
+                .observeOn(AndroidSchedulers.mainThread())
+                .subscribe()
         }
 
-        initializeFirstFlashcard()
 
 
 
@@ -84,14 +103,18 @@ class LearnActivity: AppCompatActivity(){
     }
 
     fun deleteFlashcard(){
-        db.deleteData(flashcardList.get(flashcardIndex).id)
-        flashcardList.removeAt(flashcardIndex)
-        if(flashcardList.isNotEmpty()){
-            nextFlashcard()
-        }else{
-            flashcardIndex = 0
-            onEmptyFlashcardList()
-        }
+        Observable.fromCallable {
+            flashcardDao?.deleteFlashcard(flashcardList.get(flashcardIndex))
+            flashcardList.removeAt(flashcardIndex)
+            if(flashcardList.isNotEmpty()){
+                nextFlashcard()
+            }else{
+                flashcardIndex = 0
+                onEmptyFlashcardList()
+            }
+        }.subscribeOn(Schedulers.io())
+            .observeOn(AndroidSchedulers.mainThread())
+            .subscribe()
     }
 
     fun onEmptyFlashcardList(){
