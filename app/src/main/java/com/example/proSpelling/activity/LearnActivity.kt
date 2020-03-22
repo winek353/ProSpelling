@@ -9,6 +9,7 @@ import com.example.proSpelling.R
 import com.example.proSpelling.dao.FlashcardDao
 import com.example.proSpelling.database.AppDatabase
 import com.example.proSpelling.entity.Flashcard
+import io.reactivex.Completable
 import io.reactivex.Observable
 import io.reactivex.android.schedulers.AndroidSchedulers
 import io.reactivex.schedulers.Schedulers
@@ -28,51 +29,37 @@ class LearnActivity: AppCompatActivity(){
 
         save_edition_button.setVisibility(View.GONE)
 
-
-
-        Observable.fromCallable {
+        Completable.fromAction{
             db = AppDatabase.getAppDataBase(context = this)
             flashcardDao = db?.flashcardDao()
             flashcardList = flashcardDao?.getFlashcards()?.toMutableList().orEmpty().toMutableList()
-            initializeFirstFlashcard()
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
+            .doOnComplete{ initializeFirstFlashcard()}
             .subscribe()
+    }
 
-        flashcard.setOnClickListener{
-            flipFlashcard()
-        }
-        next_button.setOnClickListener{
-            nextFlashcard()
-        }
-        delete_button.setOnClickListener{
-            deleteFlashcard()
-        }
-        edit_button.setOnClickListener{
-            editFlashcard()
-        }
+    fun updateFlashcard(){
+        edit_obverse.setVisibility(View.GONE)
+        edit_reverse.setVisibility(View.GONE)
+        save_edition_button.setVisibility(View.GONE)
 
-        save_edition_button.setOnClickListener{
-            edit_obverse.setVisibility(View.GONE)
-            edit_reverse.setVisibility(View.GONE)
-            save_edition_button.setVisibility(View.GONE)
+        flashcardList.get(flashcardIndex).obverse = edit_obverse.text.toString()
+        flashcardList.get(flashcardIndex).reverse = edit_reverse.text.toString()
 
-            flashcardList.get(flashcardIndex).obverse = edit_obverse.text.toString()
-            flashcardList.get(flashcardIndex).reverse = edit_reverse.text.toString()
-
-            Observable.fromCallable {
+        Observable.fromCallable {
                 flashcardDao?.updateFlashcard(flashcardList.get(flashcardIndex))
-            }.subscribeOn(Schedulers.io())
+            refreshFlashcardData()
+        setButtonsActive()
+    }.subscribeOn(Schedulers.io())
                 .observeOn(AndroidSchedulers.mainThread())
                 .subscribe()
         }
 
 
-
-
-    }
-
     fun editFlashcard(){
+        disableButtons()
+
         edit_obverse.setText(flashcardList.get(flashcardIndex).obverse)
         edit_obverse.setVisibility(View.VISIBLE)
 
@@ -82,14 +69,18 @@ class LearnActivity: AppCompatActivity(){
         save_edition_button.setVisibility(View.VISIBLE)
     }
 
+    fun refreshFlashcardData(){
+        flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+        isFlashcardShowingObverse = true
+    }
+
     fun flipFlashcard(){
+        YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
         if(isFlashcardShowingObverse){
-            YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
             flashcard_main_text.setText(flashcardList.get(flashcardIndex).reverse)
             isFlashcardShowingObverse = false
         }
         else{
-            YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
             flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
             isFlashcardShowingObverse = true
         }
@@ -98,30 +89,27 @@ class LearnActivity: AppCompatActivity(){
     fun nextFlashcard(){
         flashcardIndex++
         flashcardIndex %= flashcardList.size
-        flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
-        isFlashcardShowingObverse = true
+        refreshFlashcardData()
     }
 
-    fun deleteFlashcard(){
-        Observable.fromCallable {
-            flashcardDao?.deleteFlashcard(flashcardList.get(flashcardIndex))
-            flashcardList.removeAt(flashcardIndex)
-            if(flashcardList.isNotEmpty()){
-                nextFlashcard()
-            }else{
-                flashcardIndex = 0
-                onEmptyFlashcardList()
-            }
-        }.subscribeOn(Schedulers.io())
-            .observeOn(AndroidSchedulers.mainThread())
-            .subscribe()
-    }
+//    fun deleteFlashcard(){TODO
+//        Observable.fromCallable {
+//            flashcardDao?.deleteFlashcard(flashcardList.get(flashcardIndex))
+//            flashcardList.removeAt(flashcardIndex)
+//            if(flashcardList.isNotEmpty()){
+//                nextFlashcard()
+//            }else{
+//                flashcardIndex = 0
+//                onEmptyFlashcardList()
+//            }
+//        }.subscribeOn(Schedulers.io())
+//            .observeOn(AndroidSchedulers.mainThread())
+//            .subscribe()
+//    }
 
     fun onEmptyFlashcardList(){
         flashcard_main_text.setText("NO DATA!")
-        flashcard.setOnClickListener(null)
-        next_button.setOnClickListener(null)
-        delete_button.setOnClickListener(null)
+        disableButtons()
     }
 
     fun initializeFirstFlashcard(){
@@ -130,6 +118,32 @@ class LearnActivity: AppCompatActivity(){
         }else{
             flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
             isFlashcardShowingObverse = true
+            setButtonsActive()
+        }
+    }
+
+    fun disableButtons(){
+        flashcard.setOnClickListener(null)
+        next_button.setOnClickListener(null)
+        delete_button.setOnClickListener(null)
+        edit_button.setOnClickListener(null)
+    }
+
+    fun setButtonsActive(){
+        flashcard.setOnClickListener{
+            flipFlashcard()
+        }
+        next_button.setOnClickListener{
+            nextFlashcard()
+        }
+//        delete_button.setOnClickListener{TODO
+//            deleteFlashcard()
+//        }
+        edit_button.setOnClickListener{
+            editFlashcard()
+        }
+        save_edition_button.setOnClickListener{
+            updateFlashcard()
         }
     }
 
