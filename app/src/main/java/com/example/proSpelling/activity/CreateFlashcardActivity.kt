@@ -23,7 +23,7 @@ class CreateFlashcardActivity : AppCompatActivity() {
 
         createButton.setOnClickListener {
             if(obverse_text.text.toString().isNotEmpty() && reverse_text.text.toString().isNotEmpty()) {
-                var flashcard = Flashcard(obverse = obverse_text.text.toString(), reverse =  reverse_text.text.toString())
+                val flashcard = Flashcard(obverse = obverse_text.text.toString(), reverse =  reverse_text.text.toString())
 
                 Observable.fromCallable {
                     db = AppDatabase.getAppDataBase(context = this)
@@ -32,6 +32,8 @@ class CreateFlashcardActivity : AppCompatActivity() {
                 }.subscribeOn(Schedulers.io())
                     .observeOn(AndroidSchedulers.mainThread())
                     .subscribe()
+
+                Toast.makeText(this, "Success", Toast.LENGTH_SHORT).show()
 
             }else{
                 Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show()

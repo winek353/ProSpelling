@@ -19,19 +19,18 @@ class LearnActivity : AppCompatActivity() {
     private var isFlashcardShowingObverse = true
     private var flashcardList: MutableList<Flashcard> = emptyList<Flashcard>().toMutableList()
     private var flashcardIndex = 0
-    private var db: AppDatabase? = null
     private var flashcardDao: FlashcardDao? = null
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_learn)
+        save_edition_button.visibility = View.GONE
 
-        save_edition_button.setVisibility(View.GONE)
+        val db = AppDatabase.getAppDataBase(context = this)
+        flashcardDao = db?.flashcardDao()
 
         Completable.fromAction {
-            db = AppDatabase.getAppDataBase(context = this)
-            flashcardDao = db?.flashcardDao()
             flashcardList = flashcardDao?.getFlashcards()?.toMutableList().orEmpty().toMutableList()
         }.subscribeOn(Schedulers.io())
             .observeOn(AndroidSchedulers.mainThread())
@@ -40,9 +39,9 @@ class LearnActivity : AppCompatActivity() {
     }
 
     fun updateFlashcard() {
-        edit_obverse.setVisibility(View.GONE)
-        edit_reverse.setVisibility(View.GONE)
-        save_edition_button.setVisibility(View.GONE)
+        edit_obverse.visibility = View.GONE
+        edit_reverse.visibility = View.GONE
+        save_edition_button.visibility = View.GONE
 
         flashcardList.get(flashcardIndex).obverse = edit_obverse.text.toString()
         flashcardList.get(flashcardIndex).reverse = edit_reverse.text.toString()
@@ -63,26 +62,26 @@ class LearnActivity : AppCompatActivity() {
         disableButtons()
 
         edit_obverse.setText(flashcardList.get(flashcardIndex).obverse)
-        edit_obverse.setVisibility(View.VISIBLE)
+        edit_obverse.visibility = View.VISIBLE
 
         edit_reverse.setText(flashcardList.get(flashcardIndex).reverse)
-        edit_reverse.setVisibility(View.VISIBLE)
+        edit_reverse.visibility = View.VISIBLE
 
-        save_edition_button.setVisibility(View.VISIBLE)
+        save_edition_button.visibility = View.VISIBLE
     }
 
     fun refreshFlashcardData() {
-        flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+        flashcard_main_text.text = flashcardList.get(flashcardIndex).obverse
         isFlashcardShowingObverse = true
     }
 
     fun flipFlashcard() {
         YoYo.with(Techniques.FlipInX).duration(1000).playOn(flashcard)
         if (isFlashcardShowingObverse) {
-            flashcard_main_text.setText(flashcardList.get(flashcardIndex).reverse)
+            flashcard_main_text.text = flashcardList.get(flashcardIndex).reverse
             isFlashcardShowingObverse = false
         } else {
-            flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+            flashcard_main_text.text = flashcardList.get(flashcardIndex).obverse
             isFlashcardShowingObverse = true
         }
     }
@@ -112,7 +111,7 @@ class LearnActivity : AppCompatActivity() {
     }
 
     fun onEmptyFlashcardList() {
-        flashcard_main_text.setText("NO DATA!")
+        flashcard_main_text.text = "NO DATA!"
         disableButtons()
     }
 
@@ -120,7 +119,7 @@ class LearnActivity : AppCompatActivity() {
         if (flashcardList.isEmpty()) {
             onEmptyFlashcardList()
         } else {
-            flashcard_main_text.setText(flashcardList.get(flashcardIndex).obverse)
+            flashcard_main_text.text = flashcardList.get(flashcardIndex).obverse
             isFlashcardShowingObverse = true
             setButtonsActive()
         }
