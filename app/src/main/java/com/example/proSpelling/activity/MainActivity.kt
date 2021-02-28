@@ -19,5 +19,8 @@ class MainActivity : AppCompatActivity() {
         buttonLearn.setOnClickListener{
             startActivity(Intent(this, LearnActivity::class.java))
         }
+        buttonBoxes.setOnClickListener{
+            startActivity(Intent(this, BoxActivity::class.java))
+        }
     }
 }
