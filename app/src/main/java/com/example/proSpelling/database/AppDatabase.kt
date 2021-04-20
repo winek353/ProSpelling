@@ -48,13 +48,13 @@ abstract class AppDatabase: RoomDatabase() {
 
         val PREPOPULATE_DATA_LEITNER_BOXES_SQL = "INSERT INTO LeitnerBox (imageResource,title,description,frequency)\n" +
                 "VALUES(2131099736, 'Level 1', 'Standard box level one box with frequency=1', 1)," +
-                "(2131099736, 'Level 2', 'Standard box level with frequency=2', 2)," +
+                "(2131099733, 'Level 2', 'Standard box level with frequency=2', 2)," +
                 "(2131099736, 'Level 3', 'Standard box level with frequency=4', 4)," +
-                "(2131099736, 'Level 4', 'Standard box level with frequency=9', 9)," +
+                "(2131099733, 'Level 4', 'Standard box level with frequency=9', 9)," +
                 "(2131099736, 'Level 5', 'Standard box level with frequency=16', 16)," +
-                "(2131099736, 'Level 6', 'Standard box level with frequency=35', 35)," +
+                "(2131099733, 'Level 6', 'Standard box level with frequency=35', 35)," +
                 "(2131099736, 'Level 7', 'Standard box level with frequency=64', 64)," +
-                "(2131099736, 'Level 8', 'Standard box level for already learned flashcards', 0)"
+                "(2131099733, 'Level 8', 'Standard box level for already learned flashcards', 0)"
 
         fun destroyDataBase(){
             INSTANCE = null
