@@ -8,4 +8,6 @@ data class Flashcard(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     var obverse : String = "",
-    var reverse : String = "")
+    var reverse : String = "",
+    var idFkLeitnerBox: Int? = null
+)

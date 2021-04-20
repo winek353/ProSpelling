@@ -5,33 +5,37 @@ import android.os.Bundle
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.example.proSpelling.R
 import com.example.proSpelling.activity.adapter.BoxesAdapter
-import com.example.proSpelling.entity.BoxItem
+import com.example.proSpelling.dao.LeitnerBoxDao
+import com.example.proSpelling.database.AppDatabase
+import com.example.proSpelling.entity.LeitnerBox
 import kotlinx.android.synthetic.main.activity_boxes.*
+import kotlinx.coroutines.*
+import kotlinx.coroutines.Dispatchers.IO
+import kotlinx.coroutines.Dispatchers.Main
 
 class BoxActivity: AppCompatActivity() {
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_boxes)
-        val exampleList = generateDummyList(500)
+
         recycler_view.adapter =
-            BoxesAdapter(exampleList)
+            BoxesAdapter(emptyList())
         recycler_view.layoutManager = LinearLayoutManager(this)
         recycler_view.setHasFixedSize(true)
-    }
-    private fun generateDummyList(size: Int): List<BoxItem> {
-        val list = ArrayList<BoxItem>()
-        for (i in 0 until size) {
-            val drawable = when (i % 2) {
-                0 -> R.drawable.ic__language
-                else -> R.drawable.ic_smile
+
+        CoroutineScope(IO).launch {
+            val leitnerBoxList: MutableList<LeitnerBox> = getLeitnerBoxes()
+            withContext(Main) {
+                recycler_view.adapter = BoxesAdapter(leitnerBoxList)
             }
-            val item = BoxItem(
-                drawable,
-                "Item $i",
-                "Line 2"
-            )
-            list += item
         }
-        return list
+    }
+
+    private suspend fun getLeitnerBoxes(): MutableList<LeitnerBox> {
+        val db = AppDatabase.getAppDataBase(context = this)
+        val leitnerBoxDao: LeitnerBoxDao? = db?.leitnerBoxDao()
+        val leitnerBoxList: MutableList<LeitnerBox> = leitnerBoxDao?.getLeitnerBoxes()?.toMutableList().orEmpty().toMutableList()
+        return leitnerBoxList
     }
 }
